@@ -38,7 +38,7 @@ export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
   const [statusSearchQuery, setStatusSearchQuery] = useState("");
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // Default TRUE so sidebar is always seen as requested!
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [inputPlaceholder, setInputPlaceholder] = useState("Choose language / भाषा निवडा (1: Marathi, 2: English, 3: Hindi)...");
 
   const messagesEndRef = useRef(null);
@@ -92,7 +92,17 @@ export default function ChatPage() {
     });
     setDummyConversations(initialDummy);
 
+    // Default sidebar to true on desktop (>=768px), false on mobile (<768px)
+    setIsSidebarOpen(window.innerWidth >= 768);
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsSidebarOpen(true);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+
     isInitialLoad.current = false;
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // Save conversation state whenever bot messages or workflow changes
@@ -880,12 +890,14 @@ export default function ChatPage() {
           ? "bg-[#0B141A] border-[#2A3942]"
           : "bg-white border-[#E9EDEF] md:h-[calc(100vh-38px)] md:my-auto md:rounded-lg shadow-2xl"
       }`}>
-        {/* Left Sidebar (visible by default as requested!) */}
+        {/* Left Sidebar */}
         <Sidebar
           activeChatId={activeChatId}
           onSelectChat={(id) => {
             setActiveChatId(id);
-            if (window.innerWidth < 768) setIsSidebarOpen(false);
+            if (typeof window !== "undefined" && window.innerWidth < 768) {
+              setIsSidebarOpen(false);
+            }
           }}
           lastBotMessageSnippet={lastBotMessageSnippet}
           lastBotMessageTime={lastBotMsg?.timestamp || "7:19 pm"}
@@ -895,9 +907,9 @@ export default function ChatPage() {
         />
 
         {/* Right Main Chat Area */}
-        <main className={`flex-1 flex flex-col h-full min-w-0 relative ${
-          isDark ? "bg-[#0B141A]" : "bg-[#EFEAE2]"
-        }`}>
+        <main className={`h-full min-w-0 relative flex-1 ${
+          isSidebarOpen ? "hidden md:flex flex-col" : "flex flex-col w-full"
+        } ${isDark ? "bg-[#0B141A]" : "bg-[#EFEAE2]"}`}>
           {/* Main Chat Header */}
           <ChatHeader
             activeChat={activeChat}

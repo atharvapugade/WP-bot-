@@ -19,6 +19,7 @@ import {
   Archive,
   Users,
   X,
+  ArrowLeft,
   Phone,
 } from "lucide-react";
 import { DUMMY_CHATS } from "@/lib/dummyChats";
@@ -57,11 +58,13 @@ export default function Sidebar({
     return true;
   });
 
-  if (!isOpen) return null;
-
   return (
     <aside
-      className={`w-full md:w-[380px] lg:w-[420px] h-full border-r flex flex-col flex-shrink-0 z-30 select-none transition-colors duration-150 ${
+      className={`h-full border-r flex flex-col flex-shrink-0 z-30 select-none transition-colors duration-150 ${
+        isOpen
+          ? "w-full md:w-[380px] lg:w-[420px] flex"
+          : "hidden md:flex md:w-[380px] lg:w-[420px]"
+      } ${
         isDark
           ? "bg-[#111B21] border-[#2A3942] text-[#E9EDEF]"
           : "bg-white border-[#E9EDEF] text-[#111B21]"
@@ -79,8 +82,9 @@ export default function Sidebar({
               className={`md:hidden p-1.5 -ml-1 rounded-full ${
                 isDark ? "text-[#AEBAC1] hover:text-[#E9EDEF] hover:bg-white/5" : "text-[#54656F] hover:text-[#111B21] hover:bg-black/5"
               }`}
+              title="Return to chat"
             >
-              <X className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5" />
             </button>
           )}
           <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#128C7E] to-[#25D366] flex items-center justify-center text-white font-bold text-xs shadow-xs cursor-pointer border border-white/20">
